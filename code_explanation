@@ -1,0 +1,87 @@
+Code explanation step by step with more detailed explanations:
+
+1. **Importing Libraries**: The necessary libraries are imported. These libraries are essential for data manipulation, visualization, machine learning, and neural network building.
+   ```python
+   import sys
+   import pandas as pd
+   import numpy as np
+   import sklearn
+   import matplotlib
+   import keras
+   import matplotlib.pyplot as plt
+   from pandas.plotting import scatter_matrix
+   ```
+
+2. **Loading Data**: The heart disease dataset is loaded from a URL. The column names for the dataset are defined using the `names` list.
+   ```python
+   url = "http://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
+   names = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'class']
+   cleveland = pd.read_csv(url, names=names)
+   ```
+
+3. **Data Cleaning**: Missing data is indicated by "?". Rows containing missing data are removed using the `~cleveland.isin(['?'])` condition.
+   ```python
+   data = cleveland[~cleveland.isin(['?'])]
+   ```
+
+4. **Data Preprocessing**:
+   - Transforming Data to Numeric: The data is transformed to numeric using the `pd.to_numeric()` function.
+   - Train-Test Split: The dataset is split into features (`X`) and the target (`y`). Then, the data is further divided into training and testing sets using `train_test_split`.
+   ```python
+   X = np.array(data.drop(['class'], 1))
+   y = np.array(data['class'])
+   X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
+   ```
+
+5. **Creating Categorical Labels**: The target variable is converted into categorical labels using the `to_categorical()` function from `keras.utils.np_utils`.
+   ```python
+   from keras.utils.np_utils import to_categorical
+   Y_train = to_categorical(y_train, num_classes=None)
+   Y_test = to_categorical(y_test, num_classes=None)
+   ```
+
+6. **Building a Categorical Model**: The `create_model()` function defines a Keras sequential model with input, hidden, and output layers. The model is compiled with the Adam optimizer and categorical cross-entropy loss.
+   ```python
+   def create_model():
+       model = Sequential()
+       model.add(Dense(8, input_dim=13, kernel_initializer='normal', activation='relu'))
+       model.add(Dense(4, kernel_initializer='normal', activation='relu'))
+       model.add(Dense(5, activation='softmax'))
+       adam = Adam(lr=0.001)
+       model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
+       return model
+   model = create_model()
+   ```
+
+7. **Model Training**: The model is trained on the training data using the `model.fit()` method. The number of epochs and batch size are specified.
+   ```python
+   model.fit(X_train, Y_train, epochs=100, batch_size=10, verbose=1)
+   ```
+
+8. **Creating a Binary Model**: A similar process is followed to create a binary classification model using the `create_binary_model()` function. This model predicts whether a person has heart disease or not.
+   ```python
+   def create_binary_model():
+       model = Sequential()
+       model.add(Dense(8, input_dim=13, kernel_initializer='normal', activation='relu'))
+       model.add(Dense(4, kernel_initializer='normal', activation='relu'))
+       model.add(Dense(1, activation='sigmoid'))
+       adam = Adam(lr=0.001)
+       model.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
+       return model
+   binary_model = create_binary_model()
+   ```
+
+9. **Training the Binary Model**: The binary model is trained on the training data using the `model.fit()` method.
+   ```python
+   binary_model.fit(X_train, Y_train_binary, epochs=100, batch_size=10, verbose=1)
+   ```
+
+10. **Model Evaluation**:
+    - Classification Report and Accuracy: The classification report and accuracy are calculated for both the categorical and binary models.
+    - A new TensorFlow-based model is evaluated using similar steps as above, with data preprocessing, model building, training, and evaluation.
+   ```python
+   test_loss, test_accuracy = model.evaluate(X_test, y_test)
+   print(f'Test accuracy: {test_accuracy}')
+   ```
+
+In summary, this code demonstrates building, training, and evaluating neural network models using the Keras library. It focuses on predicting heart disease based on medical features. The steps include loading and preprocessing data, building models, training them, and evaluating their performance using classification reports and accuracy metrics.
